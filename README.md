@@ -8,5 +8,5 @@ Read [Filesystem Implementation](https://pages.cs.wisc.edu/~remzi/OSTEP/file-imp
 
 ## Design Docs
 
-[tinyfs](./design/tinyfs.md)
-[mkfs](./design/mkfs.md)
+- [tinyfs](./design/tinyfs.md)
+- [mkfs](./design/mkfs.md)

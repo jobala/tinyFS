@@ -3,15 +3,28 @@
 TinyFS uses a file as a disk, `mkfs` formats this file and lays out the different parts like the superblock,
 bitmap so and so forth.
 
-`mkfs` serializes the **superblock** and **bitmap** into a binary format and then writes them to disk.
-The inode table and blocks don't need to be explicitly configured because we can compute the address
-of an inode or datablock from their bitmap indices and their section's starting address.
+## Goals
+    - Format disk with Superblock
+    - Format disk with Bitmap table
 
-For example, if we want to read from inode 45:
-    1. Find the starting address of inodes table 
-    2. location = inode_table_start + (45 * sizeof(inode))
-    3. read(location, sizeof(inode))
-The same formular applies for the calculation of a data block's location
+## Non Goals
+    - mkfs doesn't intend to format disk with an inode table
+    - mkfs doesn't intend to format disk with a data blocks table
+
+Formatting the disk requires to first have the data structure in memory, for example TinyFS' data blocks table
+is 56 blocks wide -- that is 56 * 4kb in size -- which will be wasteful to load into memory then write to disk.
+So how do we know a blocks location then? Simple, we can calculate it based on the bitmap index and the data
+block's table starting address.
+
+For example, the location of block 35 is;
+
+block_loc = data_table_start + (35 * sizeof(block))
+
+We can then read and write to that location without loading the whole datablock table -- about 224mb -- into memory.
+
+## Design
+
+**mkfs** takes some path which is where it will create its disk.
 
 ### Superblock
 
@@ -26,3 +39,26 @@ is 4096 bytes) giving us 4096 * 8 -- 32k-- bits. In reality, TinyFS needs around
 
 Bit 0 in the bitmap corresponds to inode 0, Bit 1 to inode 1 so and so forth. Bitmap also knows how to serialize and 
 deserialize itself to a binary format which `mkfs` uses to write to disk.
+
+## Implementation
+
+```
+class Superblock:
+    function serialize_into()
+    function deserialize_from()
+
+class Bitmap:
+    function serialize_into()
+    function deserialize_from()
+
+function mkfs(path: string)
+    file = open(path, create)
+
+    sb = Superblock()
+    sb.serialize_into(file)
+
+    bm = Bitmap()
+    bm.serialize_into(file)
+
+    file.flush()
+```
