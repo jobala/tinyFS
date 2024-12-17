@@ -26,3 +26,10 @@ impl Superblock {
         super_block
     }
 }
+
+#[cfg(test)]
+mod sb_tests {
+
+    #[test]
+    fn test_serialization() {}
+}
