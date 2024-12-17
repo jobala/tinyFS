@@ -31,5 +31,7 @@ impl Superblock {
 mod sb_tests {
 
     #[test]
-    fn test_serialization() {}
+    fn test_serialization() {
+        println!("Hello, world!");
+    }
 }

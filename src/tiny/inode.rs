@@ -1,45 +1,4 @@
-use super::superblock::BLOCK_SIZE;
 use serde::{Deserialize, Serialize};
-use std::{
-    io::{Read, Seek, SeekFrom, Write},
-    vec,
-};
-
-const INODES_PER_BLOCK: usize = 16;
-
-#[derive(Serialize, Deserialize)]
-pub struct InodeTable {
-    blocks: Vec<[Inode; INODES_PER_BLOCK]>,
-    block_count: usize,
-}
-
-impl InodeTable {
-    pub fn new(block_count: usize) -> InodeTable {
-        Self {
-            blocks: vec![[Inode::default(); INODES_PER_BLOCK]; block_count],
-            block_count,
-        }
-    }
-
-    pub fn serialize_into<W: Write + Seek>(&mut self, mut w: W) {
-        let offset = 3 * BLOCK_SIZE as u64;
-
-        let data = bincode::serialize(self).unwrap();
-        w.seek(SeekFrom::Start(offset)).unwrap();
-        w.write(&data).unwrap();
-    }
-
-    pub fn deserialize_from<R: Read + Seek>(&mut self, mut r: R) -> Self {
-        let offset = 3 * BLOCK_SIZE as u64;
-
-        r.seek(SeekFrom::Start(offset)).unwrap();
-        let mut buf: Vec<u8> = Vec::with_capacity(BLOCK_SIZE * self.block_count);
-        r.read_exact(&mut buf).unwrap();
-
-        let inode_table: Self = bincode::deserialize(&buf).unwrap();
-        inode_table
-    }
-}
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Copy)]
 #[repr(C)]

@@ -5,7 +5,6 @@ use std::{
 
 use crate::tiny::{
     bitmap::Bitmap,
-    inode::InodeTable,
     superblock::{Superblock, BLOCK_SIZE},
 };
 
@@ -23,9 +22,6 @@ pub fn make(path: &str) {
 
     let mut bitmap = Bitmap::new();
     bitmap.serialize_into(&mut buf);
-
-    let mut inode_table = InodeTable::new(5);
-    inode_table.serialize_into(&mut buf);
 
     buf.flush().expect("buffer to have been flushed");
     file.set_len(64 * BLOCK_SIZE as u64)

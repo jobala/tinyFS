@@ -1,7 +1,7 @@
 mod mkfs;
 mod tiny;
 
-use tiny::fs::TinyFS;
+use tiny::TinyFS;
 
 fn main() {
     mkfs::make("./tiny.img");

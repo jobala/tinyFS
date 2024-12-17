@@ -75,8 +75,6 @@ Inodes hold file metadata and represent both files and directories
 ```
   Inode
     mode int
-    uid int
-    gid int
     size int
     created_at Time
     modified_at Time
