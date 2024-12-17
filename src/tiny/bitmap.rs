@@ -12,13 +12,13 @@ pub struct Bitmap {
 impl Bitmap {
     pub fn new() -> Self {
         Bitmap {
-            inode: bitvec![u8, Lsb0; 0; (BLOCK_SIZE * 8) as usize],
-            data: bitvec![u8, Lsb0; 0; (BLOCK_SIZE * 8) as usize],
+            inode: bitvec![u8, Lsb0; 0; BLOCK_SIZE * 8],
+            data: bitvec![u8, Lsb0; 0; BLOCK_SIZE * 8 ],
         }
     }
 
     pub fn serialize_into<W: Write + Seek>(&mut self, mut buf: W) {
-        let offset = BLOCK_SIZE;
+        let offset = BLOCK_SIZE as u64;
 
         buf.seek(SeekFrom::Start(offset)).unwrap();
         buf.write_all(self.inode.as_raw_slice()).unwrap();
@@ -26,9 +26,9 @@ impl Bitmap {
     }
 
     pub fn deserialize_from<R: Read + Seek>(&mut self, mut r: R) {
-        let offset = BLOCK_SIZE;
-        let mut buf = Vec::with_capacity(BLOCK_SIZE as usize);
+        let offset = BLOCK_SIZE as u64;
 
+        let mut buf = Vec::with_capacity(BLOCK_SIZE);
         r.seek(SeekFrom::Start(offset)).unwrap();
         r.read_exact(&mut buf).unwrap();
         self.inode = BitVec::from_slice(&buf);

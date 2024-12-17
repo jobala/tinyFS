@@ -28,6 +28,6 @@ pub fn make(path: &str) {
     inode_table.serialize_into(&mut buf);
 
     buf.flush().expect("buffer to have been flushed");
-    file.set_len(64 * BLOCK_SIZE)
+    file.set_len(64 * BLOCK_SIZE as u64)
         .expect("to have set file size");
 }
