@@ -17,13 +17,13 @@ impl Superblock {
         }
     }
 
-    pub fn serialize_into<W: Write>(&mut self, buf: W) {
-        bincode::serialize_into(buf, self).unwrap();
+    pub fn serialize_into<W: Write>(&mut self, buf: W) -> Result<(), bincode::Error> {
+        bincode::serialize_into(buf, self)
     }
 
-    pub fn deserialize_from<R: Read>(&mut self, buf: R) -> Self {
-        let super_block: Self = bincode::deserialize_from(buf).unwrap();
-        super_block
+    pub fn deserialize_from<R: Read>(&mut self, buf: R) -> Result<Self, bincode::Error> {
+        let super_block: Self = bincode::deserialize_from(buf)?;
+        Ok(super_block)
     }
 }
 

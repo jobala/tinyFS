@@ -22,7 +22,8 @@ becoming a production ready filesystem. TinyFS will be implemented in Rust.
 
 ### Non Goals
 - Support Journaling
-- Supporting large files
+- Supporting very large files
+- Caching
 - Becoming a distributed filesystem
 
 
@@ -34,12 +35,10 @@ TinyFS formats the disk into 4kb  blocks and will have 64 blocks in total, which
 256mb free space. The first block will be used for the superblock, the next two blocks will be used for inode and data
 bitmap tables respectively and the following 5 blocks are used for inodes.
 
-<figure>
+<figure align="center">
 
 ![Disk](img/disk.png)
-
-<figcaption align="center">TinyFS Disk Layout</figcaption>
-
+<figcaption >TinyFS Disk Layout</figcaption>
 </figure>
 
 The disk layout above means that the first 8 blocks are used for managing the filesystem and the remaining 56 blocks are

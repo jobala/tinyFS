@@ -1,4 +1,4 @@
-use std::io::{Read, Seek, SeekFrom, Write};
+use std::io::{self, Read, Seek, SeekFrom, Write};
 
 use bitvec::prelude::*;
 
@@ -17,24 +17,27 @@ impl Bitmap {
         }
     }
 
-    pub fn serialize_into<W: Write + Seek>(&mut self, mut buf: W) {
+    pub fn serialize_into<W: Write + Seek>(&mut self, mut buf: W) -> Result<(), io::Error> {
         let offset = BLOCK_SIZE as u64;
 
-        buf.seek(SeekFrom::Start(offset)).unwrap();
-        buf.write_all(self.inode.as_raw_slice()).unwrap();
-        buf.write_all(self.data.as_raw_slice()).unwrap();
+        buf.seek(SeekFrom::Start(offset))?;
+        buf.write_all(self.inode.as_raw_slice())?;
+        buf.write_all(self.data.as_raw_slice())?;
+        Ok(())
     }
 
-    pub fn deserialize_from<R: Read + Seek>(&mut self, mut r: R) {
+    pub fn deserialize_from<R: Read + Seek>(&mut self, mut r: R) -> Result<(), io::Error> {
         let offset = BLOCK_SIZE as u64;
 
         let mut buf = Vec::with_capacity(BLOCK_SIZE);
-        r.seek(SeekFrom::Start(offset)).unwrap();
-        r.read_exact(&mut buf).unwrap();
+        r.seek(SeekFrom::Start(offset))?;
+        r.read_exact(&mut buf)?;
         self.inode = BitVec::from_slice(&buf);
 
-        r.read_exact(&mut buf).unwrap();
+        r.read_exact(&mut buf)?;
         self.data = BitVec::from_slice(&buf);
+
+        Ok(())
     }
 
     pub fn allocate_inode(&mut self, index: usize) {

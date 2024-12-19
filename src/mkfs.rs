@@ -18,10 +18,14 @@ pub fn make(path: &str) {
     let mut buf = BufWriter::new(&file);
 
     let mut super_block = Superblock::new(BLOCK_SIZE, 64);
-    super_block.serialize_into(&mut buf);
+    super_block
+        .serialize_into(&mut buf)
+        .expect("superblock to have been serialized");
 
     let mut bitmap = Bitmap::new();
-    bitmap.serialize_into(&mut buf);
+    bitmap
+        .serialize_into(&mut buf)
+        .expect("bitmap to have been serialized");
 
     buf.flush().expect("buffer to have been flushed");
     file.set_len(64 * BLOCK_SIZE as u64)
