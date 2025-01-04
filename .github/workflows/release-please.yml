@@ -13,11 +13,18 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
       - uses: googleapis/release-please-action@v4
         id: release
         with:
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
           release-type: simple 
+
       - name: upload release artifact
         if: ${{ steps.release.outputs.release_created }}
         env:
