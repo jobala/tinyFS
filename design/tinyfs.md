@@ -93,6 +93,7 @@ Datablocks have no particular structure and hold the actual file data.
 ## Implementation
 
 [mkfs](./mkfs.md)
+[creating a file](./creating_a_file.md)
 
 ## Notes
 Before mounting the FS, make sure that the directory exists ie `mkdir /tmp/tiny`

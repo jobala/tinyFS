@@ -10,5 +10,14 @@ TinyFS is a little filesystem with no big plans.
 
 ## Design Docs
 
-- [tinyfs](./design/tinyfs.md)
-- [mkfs](./design/mkfs.md)
+- [tinyfs intro](./design/tinyfs.md)
+- [format disk](./design/mkfs.md)
+- [initialize filesystem](./design/fs_init.md)
+- [retrieve file attributes]() Not Implemented
+- [list directory contents]() Not Implemented
+- [read]() Not Implemented
+- [write]() Not Implemented
+- [mkdir]() Not Implemented
+- [rmdir]() Not Implemented
+- [unlink]() Not Implemented
+- [create]() Not Implemented
