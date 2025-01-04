@@ -15,9 +15,7 @@ Filesystem initialisation happens whenever the file system is mounted.
 - Adding default files in the default directory
 - Using A BTree to store directory entries
 
-## Design
-
-## Implementation
+## Design & Implementation
 
 ```rust
 struct Directory {

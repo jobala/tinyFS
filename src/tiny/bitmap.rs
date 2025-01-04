@@ -26,18 +26,19 @@ impl Bitmap {
         Ok(())
     }
 
-    pub fn deserialize_from<R: Read + Seek>(&mut self, mut r: R) -> Result<(), io::Error> {
+    pub fn deserialize_from<R: Read + Seek>(mut r: R) -> Result<Bitmap, io::Error> {
         let offset = BLOCK_SIZE as u64;
+        let mut bitmap = Bitmap::new();
 
         let mut buf = Vec::with_capacity(BLOCK_SIZE);
         r.seek(SeekFrom::Start(offset))?;
         r.read_exact(&mut buf)?;
-        self.inode = BitVec::from_slice(&buf);
+        bitmap.inode = BitVec::from_slice(&buf);
 
         r.read_exact(&mut buf)?;
-        self.data = BitVec::from_slice(&buf);
+        bitmap.data = BitVec::from_slice(&buf);
 
-        Ok(())
+        Ok(bitmap)
     }
 
     pub fn allocate_inode(&mut self, index: usize) {
