@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - main
-      - semantic-versioning
 
 permissions:
   contents: write
