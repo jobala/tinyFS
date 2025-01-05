@@ -23,6 +23,7 @@ impl Bitmap {
         buf.seek(SeekFrom::Start(offset))?;
         buf.write_all(self.inode.as_raw_slice())?;
         buf.write_all(self.data.as_raw_slice())?;
+        buf.flush()?;
         Ok(())
     }
 
@@ -55,5 +56,9 @@ impl Bitmap {
 
     pub fn free_data_block(&mut self, index: usize) {
         self.inode.set(index, false);
+    }
+
+    pub fn is_inode_allocated(&mut self, index: usize) -> bool {
+        self.inode[index]
     }
 }
