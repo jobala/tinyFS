@@ -1,9 +1,6 @@
-use std::{
-    fs::File,
-    io::{BufWriter, Seek, SeekFrom, Write},
-};
+use std::io::{BufWriter, Seek, SeekFrom, Write};
 
-use super::constants::INODE_BLOCK_BASE;
+use super::constants::{Disk, INODE_BLOCK_BASE};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Copy)]
@@ -18,7 +15,7 @@ pub struct Inode {
 }
 
 impl Inode {
-    pub fn save_at(&mut self, index: u64, disk: &File) -> Result<(), bincode::Error> {
+    pub fn save_at(&mut self, index: u64, disk: &Disk) -> Result<(), bincode::Error> {
         let location = INODE_BLOCK_BASE + (index * size_of::<Inode>() as u64);
         let mut buf = BufWriter::new(disk);
 

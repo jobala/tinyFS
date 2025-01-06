@@ -1,11 +1,8 @@
-use std::{
-    fs::File,
-    io::{self, BufReader, BufWriter, Read, Seek, SeekFrom, Write},
-};
+use std::io::{self, BufReader, BufWriter, Read, Seek, SeekFrom, Write};
 
 use bitvec::prelude::*;
 
-use super::constants::BLOCK_SIZE;
+use super::constants::{Disk, BLOCK_SIZE};
 
 pub struct Bitmap {
     inode: BitVec<u8>,
@@ -20,12 +17,12 @@ impl Bitmap {
         }
     }
 
-    pub fn from(file: &File) -> Bitmap {
-        let buf = BufReader::new(file);
+    pub fn from(disk: &Disk) -> Bitmap {
+        let buf = BufReader::new(disk);
         Self::deserialize_from(buf).expect("failed to load bitmap")
     }
 
-    pub fn save(&mut self, file: &File) -> Result<(), io::Error> {
+    pub fn save_to(&mut self, file: &Disk) -> Result<(), io::Error> {
         let buf = BufWriter::new(file);
         self.serialize_into(buf)
     }
