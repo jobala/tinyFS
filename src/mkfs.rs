@@ -3,10 +3,7 @@ use std::{
     io::{BufWriter, Write},
 };
 
-use crate::tiny::{
-    bitmap::Bitmap,
-    superblock::{Superblock, BLOCK_SIZE},
-};
+use crate::tiny::{bitmap::Bitmap, constants::BLOCK_SIZE, superblock::Superblock};
 
 pub fn make(path: &str) {
     let file = OpenOptions::new()

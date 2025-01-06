@@ -5,7 +5,7 @@ use std::{
 
 use bitvec::prelude::*;
 
-use super::superblock::BLOCK_SIZE;
+use super::constants::BLOCK_SIZE;
 
 pub struct Bitmap {
     inode: BitVec<u8>,
