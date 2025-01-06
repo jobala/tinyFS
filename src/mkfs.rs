@@ -23,9 +23,7 @@ pub fn make(path: &str) {
         .expect("superblock to have been serialized");
 
     let mut bitmap = Bitmap::new();
-    bitmap
-        .serialize_into(&mut buf)
-        .expect("bitmap to have been serialized");
+    bitmap.save(&file).expect("bitmap to have been serialized");
 
     buf.flush().expect("buffer to have been flushed");
     file.set_len(64 * BLOCK_SIZE as u64)

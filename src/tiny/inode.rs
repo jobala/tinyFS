@@ -1,4 +1,7 @@
-use std::io::{Seek, SeekFrom, Write};
+use std::{
+    fs::File,
+    io::{BufWriter, Seek, SeekFrom, Write},
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -20,12 +23,9 @@ const INODE_BLOCK_BASE: u64 = 3u64 * BLOCK_SIZE as u64;
 
 impl Inode {
     // TODO: this may either generate a bincode or io error, handle both errors correctly
-    pub fn save_at<W: Write + Seek>(
-        &mut self,
-        index: u64,
-        mut buf: W,
-    ) -> Result<(), bincode::Error> {
+    pub fn save_at(&mut self, index: u64, file: &File) -> Result<(), bincode::Error> {
         let location = INODE_BLOCK_BASE + (index * size_of::<Inode>() as u64);
+        let mut buf = BufWriter::new(file);
 
         buf.seek(SeekFrom::Start(location))?;
         self.serialize_into(&mut buf)?;

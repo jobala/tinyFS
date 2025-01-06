@@ -1,31 +1,21 @@
 use fuse::Filesystem;
-use std::{
-    ffi::c_int,
-    fs::OpenOptions,
-    io::{BufReader, BufWriter},
-};
+use std::{ffi::c_int, fs::OpenOptions};
 
 use super::{bitmap::Bitmap, inode::Inode};
 
 pub struct TinyFS;
 
+// TODO: Test that this actually works
 impl Filesystem for TinyFS {
-    // TODO: Test that this actually works
     fn init(&mut self, _req: &fuse::Request) -> Result<(), c_int> {
         let root_dir_inode = 0;
-        let file = OpenOptions::new()
+        let disk = OpenOptions::new()
             .write(true)
             .read(true)
             .open("./tiny.img")
             .expect("file to have been opened");
 
-        let mut buf = BufReader::new(&file);
-        let write_buf = BufWriter::new(&file);
-
-        // TODO: encapsulate serialization in buffer
-        // Pass file in the buffer constructor
-        let mut bm = Bitmap::deserialize_from(&mut buf).unwrap();
-
+        let mut bm = Bitmap::from(&disk);
         if bm.is_inode_allocated(root_dir_inode) {
             return Ok(());
         }
@@ -36,7 +26,7 @@ impl Filesystem for TinyFS {
         inode.id = 0;
         inode.file_type = 1;
         inode
-            .save_at(0, write_buf)
+            .save_at(0, &disk)
             .expect("inode was saved successfully");
 
         Ok(())
