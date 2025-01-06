@@ -1,8 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
 
-pub const BLOCK_SIZE: usize = 4096;
-
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Superblock {
     block_size: usize,

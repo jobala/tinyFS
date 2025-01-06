@@ -3,9 +3,8 @@ use std::{
     io::{BufWriter, Seek, SeekFrom, Write},
 };
 
+use super::constants::INODE_BLOCK_BASE;
 use serde::{Deserialize, Serialize};
-
-use super::superblock::BLOCK_SIZE;
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Copy)]
 #[repr(C)]
@@ -18,18 +17,14 @@ pub struct Inode {
     pub block_pointers: [u32; 12],
 }
 
-// TODO: move constants to a constants file
-const INODE_BLOCK_BASE: u64 = 3u64 * BLOCK_SIZE as u64;
-
 impl Inode {
-    // TODO: this may either generate a bincode or io error, handle both errors correctly
-    pub fn save_at(&mut self, index: u64, file: &File) -> Result<(), bincode::Error> {
+    pub fn save_at(&mut self, index: u64, disk: &File) -> Result<(), bincode::Error> {
         let location = INODE_BLOCK_BASE + (index * size_of::<Inode>() as u64);
-        let mut buf = BufWriter::new(file);
+        let mut buf = BufWriter::new(disk);
 
-        buf.seek(SeekFrom::Start(location))?;
+        let _ = buf.seek(SeekFrom::Start(location));
         self.serialize_into(&mut buf)?;
-        buf.flush()?;
+        let _ = buf.flush();
         Ok(())
     }
 
