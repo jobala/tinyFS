@@ -22,8 +22,8 @@ impl Bitmap {
         Self::deserialize_from(buf).expect("failed to load bitmap")
     }
 
-    pub fn save_to(&mut self, file: &Disk) -> Result<(), io::Error> {
-        let buf = BufWriter::new(file);
+    pub fn save_to(&mut self, disk: &Disk) -> Result<(), io::Error> {
+        let buf = BufWriter::new(disk);
         self.serialize_into(buf)
     }
 
@@ -31,17 +31,18 @@ impl Bitmap {
         self.inode.set(index, true)
     }
 
-    pub fn free_inode(&mut self, index: usize) {
-        self.inode.set(index, false);
-    }
-
-    pub fn allocate_data_block(&mut self, index: usize) {
-        self.data.set(index, true);
-    }
-
-    pub fn free_data_block(&mut self, index: usize) {
-        self.inode.set(index, false);
-    }
+    //pub fn free_inode(&mut self, index: usize) {
+    //    self.inode.set(index, false);
+    //}
+    //
+    //pub fn allocate_data_block(&mut self, index: usize) {
+    //    self.data.set(index, true);
+    //}
+    //
+    //pub fn free_data_block(&mut self, index: usize) {
+    //    self.inode.set(index, false);
+    //}
+    //
 
     pub fn is_inode_allocated(&mut self, index: usize) -> bool {
         self.inode[index]
@@ -61,7 +62,7 @@ impl Bitmap {
         let offset = BLOCK_SIZE as u64;
         let mut bitmap = Bitmap::new();
 
-        let mut buf = Vec::with_capacity(BLOCK_SIZE);
+        let mut buf = [1u8; BLOCK_SIZE];
         r.seek(SeekFrom::Start(offset))?;
         r.read_exact(&mut buf)?;
         bitmap.inode = BitVec::from_slice(&buf);

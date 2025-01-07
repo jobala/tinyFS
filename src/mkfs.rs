@@ -8,7 +8,7 @@ use crate::tiny::{bitmap::Bitmap, constants::BLOCK_SIZE, superblock::Superblock}
 pub fn make(path: &str) {
     let disk = OpenOptions::new()
         .write(true)
-        .create_new(true)
+        .create(true)
         .open(path)
         .expect("file to have been opened");
 

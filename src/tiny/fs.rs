@@ -29,6 +29,8 @@ impl Filesystem for TinyFS {
             .save_at(0, &disk)
             .expect("error saving root directory inode");
 
+        bm.allocate_inode(0);
+        bm.save_to(&disk).expect("error saving root directory");
         Ok(())
     }
 }
