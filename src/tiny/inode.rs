@@ -5,13 +5,14 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Default, Clone, Copy)]
 #[repr(C)]
+
 pub struct Inode {
     pub id: u32,
     pub size: u64,
     pub mode: u16,
     pub hard_links: u16,
     pub file_type: u8,
-    pub block_pointers: [u32; 12],
+    pub block_pointers: [u64; 12],
 }
 
 impl Inode {

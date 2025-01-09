@@ -1,13 +1,12 @@
-use std::io::{self, BufReader, BufWriter, Read, Seek, SeekFrom, Write};
+use std::{
+    fmt::Error,
+    io::{self, BufReader, BufWriter, Read, Seek, SeekFrom, Write},
+};
 
+use bincode::ErrorKind;
 use bitvec::prelude::*;
 
 use super::constants::{Disk, BLOCK_SIZE};
-
-pub struct Bitmap {
-    inode: BitVec<u8>,
-    data: BitVec<u8>,
-}
 
 impl Bitmap {
     pub fn new() -> Self {
@@ -35,9 +34,21 @@ impl Bitmap {
     //    self.inode.set(index, false);
     //}
     //
-    //pub fn allocate_data_block(&mut self, index: usize) {
-    //    self.data.set(index, true);
-    //}
+    pub fn allocate_data_block(&mut self, index: usize) {
+        self.data.set(index, true);
+    }
+
+    // TODO: use correct error handling
+    // https://doc.rust-lang.org/rust-by-example/error/multiple_error_types/define_error_type.html
+    pub fn find_free_data_block(&mut self) -> usize {
+        for i in 0..self.data.len() {
+            if self.data[i] == false {
+                return i;
+            }
+        }
+
+        return 0;
+    }
     //
     //pub fn free_data_block(&mut self, index: usize) {
     //    self.inode.set(index, false);
@@ -62,7 +73,7 @@ impl Bitmap {
         let offset = BLOCK_SIZE as u64;
         let mut bitmap = Bitmap::new();
 
-        let mut buf = [1u8; BLOCK_SIZE];
+        let mut buf = [0u8; BLOCK_SIZE];
         r.seek(SeekFrom::Start(offset))?;
         r.read_exact(&mut buf)?;
         bitmap.inode = BitVec::from_slice(&buf);
@@ -72,4 +83,9 @@ impl Bitmap {
 
         Ok(bitmap)
     }
+}
+
+pub struct Bitmap {
+    inode: BitVec<u8>,
+    data: BitVec<u8>,
 }

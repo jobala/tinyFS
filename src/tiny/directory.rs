@@ -11,12 +11,16 @@ pub struct Directory {
 }
 
 impl Directory {
-    fn serialize_into<W: Write>(&mut self, buf: W) -> Result<(), bincode::Error> {
+    pub fn serialize_into<W: Write>(&mut self, buf: W) -> Result<(), bincode::Error> {
         bincode::serialize_into(buf, self)
     }
 
-    fn deserialize_from<R: Read>(&mut self, buf: R) -> Result<Directory, bincode::Error> {
+    pub fn deserialize_from<R: Read>(&mut self, buf: R) -> Result<Directory, bincode::Error> {
         let directory: Self = bincode::deserialize_from(buf)?;
         Ok(directory)
+    }
+
+    pub fn insert(&mut self, path: &str, inode_num: i32) {
+        self.entries.insert(String::from(path), inode_num);
     }
 }
