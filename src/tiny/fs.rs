@@ -12,7 +12,6 @@ pub struct TinyFS {
 
 impl Filesystem for TinyFS {
     fn init(&mut self, _req: &fuse::Request) -> Result<(), c_int> {
-        self.load_disk();
         let root_dir_inode = 0;
 
         let mut bm = Bitmap::from(&self.disk);

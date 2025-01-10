@@ -35,12 +35,4 @@ impl TinyFS {
 
         block_ptrs
     }
-
-    pub fn load_disk(&mut self) {
-        self.disk = OpenOptions::new()
-            .write(true)
-            .read(true)
-            .open("./tiny.img")
-            .expect("file to have been opened");
-    }
 }
