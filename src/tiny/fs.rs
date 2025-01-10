@@ -1,7 +1,6 @@
 use fuse::Filesystem;
 use std::{
     ffi::c_int,
-    fs::OpenOptions,
     io::{BufWriter, Write},
 };
 
@@ -13,13 +12,8 @@ pub struct TinyFS {
 
 impl Filesystem for TinyFS {
     fn init(&mut self, _req: &fuse::Request) -> Result<(), c_int> {
+        self.load_disk();
         let root_dir_inode = 0;
-        let disk = OpenOptions::new()
-            .write(true)
-            .read(true)
-            .open("./tiny.img")
-            .expect("file to have been opened");
-        self.disk = disk;
 
         let mut bm = Bitmap::from(&self.disk);
         if bm.is_inode_allocated(root_dir_inode) {
@@ -27,15 +21,15 @@ impl Filesystem for TinyFS {
         }
 
         let mut inode = Inode::default();
-        let mut root_dir = Directory::default();
+        let mut inode_data = Directory::default();
 
-        let root_buf = Vec::new();
-        let mut buf = BufWriter::new(root_buf);
-        let _ = root_dir.serialize_into(&mut buf);
-        let _ = buf.flush(); // make sure content is written to the underlying writer.
+        let data_buf = Vec::new();
+        let mut write_buf = BufWriter::new(data_buf);
+        let _ = inode_data.serialize_into(&mut write_buf);
+        let _ = write_buf.flush();
+        let data_buf = write_buf.into_inner().expect("error getting inner buffer");
 
-        let inner_buf = buf.into_inner().expect("error getting inner buffer");
-        inode.block_pointers = self.save_data_blocks(&mut bm, inner_buf);
+        inode.block_pointers = self.save_data_blocks(&mut bm, data_buf);
         inode.id = 0;
         inode.file_type = 1;
         inode

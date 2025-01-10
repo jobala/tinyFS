@@ -1,4 +1,7 @@
-use std::io::{BufWriter, Cursor, Read, Seek, SeekFrom, Write};
+use std::{
+    fs::OpenOptions,
+    io::{BufWriter, Cursor, Read, Seek, SeekFrom, Write},
+};
 
 use super::{
     bitmap::Bitmap,
@@ -33,5 +36,13 @@ impl TinyFS {
         }
 
         block_ptrs
+    }
+
+    pub fn load_disk(&mut self) {
+        self.disk = OpenOptions::new()
+            .write(true)
+            .read(true)
+            .open("./tiny.img")
+            .expect("file to have been opened");
     }
 }
