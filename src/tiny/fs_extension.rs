@@ -10,11 +10,12 @@ use super::{
 };
 
 impl TinyFS {
-    // TODO:  throw error for sizes greater than 48KB
+    // TODO:  throw error for files greater than 48KB in size
     pub fn save_data_blocks(&mut self, bitmap: &mut Bitmap, buf: Vec<u8>) -> [u64; 12] {
         let mut block_ptrs = [0u64; 12];
         let mut cursor = Cursor::new(buf);
         let mut chunk = [0u8; BLOCK_SIZE];
+        let mut last_allocated = 0;
 
         while let Ok(n) = cursor.read(&mut chunk) {
             if n == 0 {
@@ -28,11 +29,8 @@ impl TinyFS {
             let _ = write_buf.seek(SeekFrom::Start(block_location));
             let _ = write_buf.write_all(&chunk);
 
-            for i in 0..block_ptrs.len() {
-                if block_ptrs[i] == 0 {
-                    block_ptrs[i] = block_location;
-                }
-            }
+            block_ptrs[last_allocated] = block_location;
+            last_allocated += 1;
         }
 
         block_ptrs
