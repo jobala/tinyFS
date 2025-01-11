@@ -1,6 +1,3 @@
-Intention
-I want to inform the reader about what happens during filesystem initialisation
-
 ## Filesystem Initialization
 
 Filesystem initialisation happens whenever the file system is mounted.
