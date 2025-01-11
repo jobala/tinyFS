@@ -4,7 +4,7 @@ use std::{
     io::{BufWriter, Write},
 };
 
-use super::{bitmap::Bitmap, constants::Disk, directory::Directory, inode::Inode};
+use super::{bitmap::Bitmap, constants::Disk, directory::DirData, inode::Inode};
 
 pub struct TinyFS {
     pub disk: Disk,
@@ -20,7 +20,7 @@ impl Filesystem for TinyFS {
         }
 
         let mut inode = Inode::default();
-        let mut inode_data = Directory::default();
+        let mut inode_data = DirData::default();
 
         let data_buf = Vec::new();
         let mut write_buf = BufWriter::new(data_buf);

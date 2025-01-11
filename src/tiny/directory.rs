@@ -6,16 +6,16 @@ use std::{
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default)]
-pub struct Directory {
+pub struct DirData {
     entries: HashMap<String, i32>,
 }
 
-impl Directory {
+impl DirData {
     pub fn serialize_into<W: Write>(&mut self, buf: W) -> Result<(), bincode::Error> {
         bincode::serialize_into(buf, self)
     }
 
-    pub fn deserialize_from<R: Read>(&mut self, buf: R) -> Result<Directory, bincode::Error> {
+    pub fn deserialize_from<R: Read>(&mut self, buf: R) -> Result<DirData, bincode::Error> {
         let directory: Self = bincode::deserialize_from(buf)?;
         Ok(directory)
     }

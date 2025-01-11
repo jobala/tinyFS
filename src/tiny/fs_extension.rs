@@ -1,7 +1,4 @@
-use std::{
-    fs::OpenOptions,
-    io::{BufWriter, Cursor, Read, Seek, SeekFrom, Write},
-};
+use std::io::{BufWriter, Cursor, Read, Seek, SeekFrom, Write};
 
 use super::{
     bitmap::Bitmap,
