@@ -155,6 +155,7 @@ dependencies = [
  "bitvec",
  "fuse",
  "serde",
+ "time",
 ]
 
 [[package]]

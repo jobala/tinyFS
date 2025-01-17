@@ -3,12 +3,13 @@ use std::io::{BufWriter, Cursor, Read, Seek, SeekFrom, Write};
 use super::{
     bitmap::Bitmap,
     constants::{BLOCK_SIZE, DATA_BLOCK_BASE},
+    inode::Inode,
     TinyFS,
 };
 
 impl TinyFS {
     // TODO:  throw error for files greater than 48KB in size
-    pub fn save_data_blocks(&mut self, bitmap: &mut Bitmap, buf: Vec<u8>) -> [u64; 12] {
+    pub fn save_data_blocks(&mut self, bitmap: &mut Bitmap, buf: Vec<u8>) -> ([u64; 12], usize) {
         let mut block_ptrs = [0u64; 12];
         let mut cursor = Cursor::new(buf);
         let mut chunk = [0u8; BLOCK_SIZE];
@@ -30,6 +31,10 @@ impl TinyFS {
             last_allocated += 1;
         }
 
-        block_ptrs
+        (block_ptrs, last_allocated)
+    }
+
+    pub fn read_inode_from_disk(&mut self, ino: u64) -> Inode {
+        Inode::default()
     }
 }

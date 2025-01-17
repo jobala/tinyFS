@@ -2,7 +2,7 @@
 
 TinyFS is a little filesystem with no big plans.
 
-## Resources 
+## Resources
 
 - [Filesystem Implementation](https://pages.cs.wisc.edu/~remzi/OSTEP/file-implementation.pdf)
 - [To FUSE or Not To Fuse](https://libfuse.github.io/doxygen/fast17-vangoor.pdf)
@@ -13,7 +13,7 @@ TinyFS is a little filesystem with no big plans.
 - [tinyfs intro](./design/tinyfs.md)
 - [format disk](./design/mkfs.md)
 - [initialize filesystem](./design/fs_init.md)
-- [retrieve file attributes]() Not Implemented
+- [retrieve file attributes](./design/file_attr.md)
 - [list directory contents]() Not Implemented
 - [read]() Not Implemented
 - [write]() Not Implemented
