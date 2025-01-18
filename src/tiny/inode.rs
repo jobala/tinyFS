@@ -1,5 +1,5 @@
 use std::{
-    io::{BufWriter, Seek, SeekFrom, Write},
+    io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write},
     time::SystemTime,
 };
 
@@ -11,14 +11,24 @@ use fuse::{FileAttr, FileType};
 use serde::{Deserialize, Serialize};
 
 impl Inode {
-    pub fn save_at(&mut self, index: usize, disk: &Disk) -> Result<(), bincode::Error> {
-        let location = INODE_BLOCK_BASE + (index * size_of::<Inode>()) as u64;
+    pub fn save_at(&mut self, ino: u64, disk: &Disk) -> Result<(), bincode::Error> {
+        let location = Self::get_location(ino);
         let mut buf = BufWriter::new(disk);
 
         let _ = buf.seek(SeekFrom::Start(location));
         self.serialize_into(&mut buf)?;
         let _ = buf.flush();
         Ok(())
+    }
+
+    pub fn load_from(disk: &Disk, ino: u64) -> Result<Inode, bincode::Error> {
+        let location = Self::get_location(ino);
+        let mut buf = BufReader::new(disk);
+        let _ = buf.seek(SeekFrom::Start(location));
+
+        let mut read_buf = [0; size_of::<Inode>()];
+        buf.read_exact(&mut read_buf);
+        bincode::deserialize_from(&mut read_buf.as_slice())
     }
 
     pub fn to_file_attr(&mut self) -> FileAttr {
@@ -49,6 +59,10 @@ impl Inode {
 
     fn serialize_into<W: Write>(&mut self, buf: W) -> Result<(), bincode::Error> {
         bincode::serialize_into(buf, self)
+    }
+
+    fn get_location(ino: u64) -> u64 {
+        INODE_BLOCK_BASE + (ino * size_of::<Inode>() as u64)
     }
 }
 

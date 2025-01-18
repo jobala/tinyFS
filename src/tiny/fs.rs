@@ -13,10 +13,6 @@ use super::{
     type_extensions::TinyTimespec,
 };
 
-pub struct TinyFS {
-    pub disk: Disk,
-}
-
 impl Filesystem for TinyFS {
     fn init(&mut self, _req: &fuse::Request) -> Result<(), c_int> {
         let root_inode = 1;
@@ -41,7 +37,7 @@ impl Filesystem for TinyFS {
         inode.id = root_inode as u64;
         inode.kind = DIR;
         inode
-            .save_at(root_inode, &self.disk)
+            .save_at(root_inode as u64, &self.disk)
             .expect("error saving root directory inode");
 
         bm.allocate_inode(root_inode);
@@ -50,20 +46,14 @@ impl Filesystem for TinyFS {
     }
 
     fn getattr(&mut self, _req: &fuse::Request, ino: u64, reply: fuse::ReplyAttr) {
-        let mut inode = self.read_inode_from_disk(ino);
+        let mut inode = Inode::load_from(&self.disk, ino).expect("error loading inode");
         let ttl = SystemTime::now();
         reply.attr(&ttl.to_timespec(), &inode.to_file_attr());
     }
 
-    fn lookup(
-        &mut self,
-        _req: &fuse::Request,
-        parent: u64,
-        name: &std::ffi::OsStr,
-        reply: fuse::ReplyEntry,
-    ) {
+    fn lookup(&mut self, _req: &fuse::Request, parent: u64, name: &std::ffi::OsStr, reply: fuse::ReplyEntry) {
         if parent == 1 && name == "." {
-            let mut inode = self.read_inode_from_disk(parent);
+            let mut inode = Inode::load_from(&self.disk, parent).expect("error loading inode");
             let ttl = SystemTime::now();
 
             reply.entry(&ttl.to_timespec(), &inode.to_file_attr(), 0);
@@ -71,5 +61,8 @@ impl Filesystem for TinyFS {
     }
 }
 
-// Implement load inode from disk given inode number
+pub struct TinyFS {
+    pub disk: Disk,
+}
+
 // Look up inode based on name and parent

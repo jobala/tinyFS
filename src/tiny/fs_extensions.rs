@@ -3,7 +3,6 @@ use std::io::{BufWriter, Cursor, Read, Seek, SeekFrom, Write};
 use super::{
     bitmap::Bitmap,
     constants::{BLOCK_SIZE, DATA_BLOCK_BASE},
-    inode::Inode,
     TinyFS,
 };
 
@@ -32,9 +31,5 @@ impl TinyFS {
         }
 
         (block_ptrs, last_allocated)
-    }
-
-    pub fn read_inode_from_disk(&mut self, ino: u64) -> Inode {
-        Inode::default()
     }
 }
