@@ -45,19 +45,21 @@ impl Filesystem for TinyFS {
         Ok(())
     }
 
-    fn getattr(&mut self, _req: &fuse::Request, ino: u64, reply: fuse::ReplyAttr) {
-        let mut inode = Inode::load_from(&self.disk, ino).expect("error loading inode");
-        let ttl = SystemTime::now();
-        reply.attr(&ttl.to_timespec(), &inode.to_file_attr());
-    }
-
-    fn lookup(&mut self, _req: &fuse::Request, parent: u64, name: &std::ffi::OsStr, reply: fuse::ReplyEntry) {
-        if parent == 1 && name == "." {
+    fn lookup(&mut self, _req: &fuse::Request, parent: u64, _name: &std::ffi::OsStr, reply: fuse::ReplyEntry) {
+        if parent == 1 {
             let mut inode = Inode::load_from(&self.disk, parent).expect("error loading inode");
             let ttl = SystemTime::now();
 
             reply.entry(&ttl.to_timespec(), &inode.to_file_attr(), 0);
+        } else {
+            reply.error(libc::ENOENT);
         }
+    }
+
+    fn getattr(&mut self, _req: &fuse::Request, ino: u64, reply: fuse::ReplyAttr) {
+        let mut inode = Inode::load_from(&self.disk, ino).expect("error loading inode");
+        let ttl = SystemTime::now();
+        reply.attr(&ttl.to_timespec(), &inode.to_file_attr());
     }
 }
 

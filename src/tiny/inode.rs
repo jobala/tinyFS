@@ -27,7 +27,7 @@ impl Inode {
         let _ = buf.seek(SeekFrom::Start(location));
 
         let mut read_buf = [0; size_of::<Inode>()];
-        buf.read_exact(&mut read_buf);
+        let _ = buf.read_exact(&mut read_buf);
         bincode::deserialize_from(&mut read_buf.as_slice())
     }
 
