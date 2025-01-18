@@ -2,6 +2,12 @@
 
 TinyFS is a little filesystem with no big plans.
 
+## Setup 
+
+1. Run `mkdir /tmp/tiny`
+2. Run `sudo addgroup <username> fuse`
+3. Run `make run` 
+
 ## Resources
 
 - [Filesystem Implementation](https://pages.cs.wisc.edu/~remzi/OSTEP/file-implementation.pdf)
