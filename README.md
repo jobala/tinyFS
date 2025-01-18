@@ -2,11 +2,15 @@
 
 TinyFS is a little filesystem with no big plans.
 
-## Setup 
+## Setup
 
 1. Run `mkdir /tmp/tiny`
 2. Run `sudo addgroup <username> fuse`
-3. Run `make run` 
+
+## Running
+
+1. To start **tinyFS** run make run in this project's root dir
+2. To interact with tinyFS, open another terminal and perform file operations on `/tmp/tiny` ie `stat /tmp/tiny`
 
 ## Resources
 
