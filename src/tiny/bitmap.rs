@@ -1,9 +1,5 @@
-use std::{
-    fmt::Error,
-    io::{self, BufReader, BufWriter, Read, Seek, SeekFrom, Write},
-};
+use std::io::{self, BufReader, BufWriter, Read, Seek, SeekFrom, Write};
 
-use bincode::ErrorKind;
 use bitvec::prelude::*;
 
 use super::constants::{Disk, BLOCK_SIZE};
