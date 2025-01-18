@@ -1,8 +1,14 @@
-use std::io::{BufWriter, Cursor, Read, Seek, SeekFrom, Write};
+use std::{
+    io::{BufWriter, Cursor, Read, Seek, SeekFrom, Write},
+    time::SystemTime,
+};
+
+use time::Timespec;
 
 use super::{
     bitmap::Bitmap,
     constants::{BLOCK_SIZE, DATA_BLOCK_BASE},
+    type_extensions::TinyTimespec,
     TinyFS,
 };
 
@@ -31,5 +37,9 @@ impl TinyFS {
         }
 
         (block_ptrs, last_allocated)
+    }
+
+    pub fn ttl(&mut self) -> Timespec {
+        SystemTime::now().to_timespec()
     }
 }
