@@ -4,12 +4,6 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
-
-#[derive(Serialize, Deserialize, Default)]
-pub struct DirData {
-    entries: HashMap<String, i32>,
-}
-
 impl DirData {
     pub fn serialize_into<W: Write>(&mut self, buf: W) -> Result<(), bincode::Error> {
         bincode::serialize_into(buf, self)
@@ -20,7 +14,19 @@ impl DirData {
         Ok(directory)
     }
 
-    pub fn insert(&mut self, path: &str, inode_num: i32) {
-        self.entries.insert(String::from(path), inode_num);
+    pub fn insert(&mut self, path: &str, entry: DirEntry) {
+        self.entries.insert(String::from(path), entry);
     }
+}
+
+#[derive(Serialize, Deserialize, Default)]
+pub struct DirData {
+    entries: HashMap<String, DirEntry>,
+}
+
+#[derive(Serialize, Deserialize, Default)]
+pub struct DirEntry {
+    ino: u64,
+    name: String,
+    mode: u8,
 }

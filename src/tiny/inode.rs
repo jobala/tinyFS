@@ -87,7 +87,7 @@ impl Inode {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 #[repr(C)]
 pub struct Inode {
     pub id: u64,

@@ -56,6 +56,8 @@ impl Filesystem for TinyFS {
         let mut inode = Inode::load_from(&self.disk, ino).expect("error loading inode");
         reply.attr(&self.ttl(), &inode.to_file_attr());
     }
+
+    fn readdir(&mut self, _req: &fuse::Request, _ino: u64, _fh: u64, _offset: i64, reply: fuse::ReplyDirectory) {}
 }
 
 pub struct TinyFS {
