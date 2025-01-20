@@ -2,7 +2,6 @@ use fuse::Filesystem;
 use std::{
     ffi::c_int,
     io::{BufWriter, Write},
-    time::SystemTime,
 };
 
 use super::{
@@ -10,7 +9,6 @@ use super::{
     constants::{Disk, DIR},
     directory::DirData,
     inode::Inode,
-    type_extensions::TinyTimespec,
 };
 
 impl Filesystem for TinyFS {
@@ -22,7 +20,7 @@ impl Filesystem for TinyFS {
             return Ok(());
         }
 
-        let mut inode = Inode::default();
+        let mut inode = Inode::new();
         let mut inode_data = DirData::default();
 
         let data_buf = Vec::new();
