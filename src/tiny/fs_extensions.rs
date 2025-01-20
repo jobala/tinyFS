@@ -33,7 +33,6 @@ impl TinyFS {
             let block_location = DATA_BLOCK_BASE + (index * BLOCK_SIZE) as u64;
             let _ = write_buf.seek(SeekFrom::Start(block_location));
             let _ = write_buf.write_all(&chunk);
-
             block_ptrs[last_allocated] = block_location;
             last_allocated += 1;
         }
@@ -46,7 +45,7 @@ impl TinyFS {
     }
 
     pub fn get_dir_data(&mut self, inode: Inode) -> DirData {
-        let mut buf = vec![0u8];
+        let mut buf = vec![];
 
         for ptr in inode.block_pointers {
             if ptr == 0 {
@@ -57,8 +56,7 @@ impl TinyFS {
             buf.append(&mut block.to_vec());
         }
 
-        let s = &buf.as_slice()[1..inode.size + 1];
-
+        let s = &buf[..inode.size + 1];
         DirData::deserialize_from(s).expect("error getting dir data")
     }
 

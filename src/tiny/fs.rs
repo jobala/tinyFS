@@ -7,7 +7,7 @@ use std::{
 use super::{
     bitmap::Bitmap,
     constants::{Disk, InodeKind},
-    directory::DirData,
+    directory::{DirData, DirEntry},
     inode::Inode,
 };
 
@@ -22,6 +22,14 @@ impl Filesystem for TinyFS {
 
         let mut inode = Inode::new();
         let mut inode_data = DirData::default();
+        inode_data.insert(
+            "a",
+            DirEntry {
+                name: "a".to_string(),
+                ino: 1,
+                kind: InodeKind::Dir,
+            },
+        );
 
         let data_buf = Vec::new();
         let mut write_buf = BufWriter::new(data_buf);
