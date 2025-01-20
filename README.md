@@ -9,7 +9,7 @@ TinyFS is a little filesystem with no big plans.
 
 ## Running
 
-1. To start **tinyFS** run make run in this project's root dir
+1. To start **tinyFS** run `cargo run` in this project's root dir
 2. To interact with tinyFS, open another terminal and perform file operations on `/tmp/tiny` ie `stat /tmp/tiny`
 
 ## Resources
@@ -24,7 +24,7 @@ TinyFS is a little filesystem with no big plans.
 - [format disk](./design/mkfs.md)
 - [initialize filesystem](./design/fs_init.md)
 - [stat](./design/stat.md)
-- [list directory contents]() Not Implemented
+- [ls](./design/ls.md)
 - [mkdir]() Not Implemented
 - [rmdir]() Not Implemented
 - [create]() Not Implemented
