@@ -1,16 +1,14 @@
-use fuse::Filesystem;
+use fuse::{FileType, Filesystem};
 use std::{
     ffi::c_int,
     io::{BufWriter, Write},
-    time::SystemTime,
 };
 
 use super::{
     bitmap::Bitmap,
-    constants::{Disk, DIR},
+    constants::{Disk, InodeKind},
     directory::DirData,
     inode::Inode,
-    type_extensions::TinyTimespec,
 };
 
 impl Filesystem for TinyFS {
@@ -22,7 +20,7 @@ impl Filesystem for TinyFS {
             return Ok(());
         }
 
-        let mut inode = Inode::default();
+        let mut inode = Inode::new();
         let mut inode_data = DirData::default();
 
         let data_buf = Vec::new();
@@ -30,12 +28,13 @@ impl Filesystem for TinyFS {
         let _ = inode_data.serialize_into(&mut write_buf);
         let _ = write_buf.flush();
         let data_buf = write_buf.into_inner().expect("error getting inner buffer");
+        inode.size = data_buf.len();
 
         let (block_ptrs, block_count) = self.save_data_blocks(&mut bm, data_buf);
         inode.block_pointers = block_ptrs;
         inode.block_count = block_count as u64;
         inode.id = root_inode as u64;
-        inode.kind = DIR;
+        inode.kind = InodeKind::Dir;
         inode
             .save_at(root_inode as u64, &self.disk)
             .expect("error saving root directory inode");
@@ -57,6 +56,24 @@ impl Filesystem for TinyFS {
     fn getattr(&mut self, _req: &fuse::Request, ino: u64, reply: fuse::ReplyAttr) {
         let mut inode = Inode::load_from(&self.disk, ino).expect("error loading inode");
         reply.attr(&self.ttl(), &inode.to_file_attr());
+    }
+
+    fn readdir(&mut self, _req: &fuse::Request, ino: u64, _fh: u64, offset: i64, mut reply: fuse::ReplyDirectory) {
+        let inode = Inode::load_from(&self.disk, ino).expect("error loading inode");
+        let dir_data = self.get_dir_data(inode);
+
+        for (i, val) in dir_data.entries.iter().enumerate().skip(offset as usize) {
+            let (name, entry) = val;
+
+            let mut kind = FileType::RegularFile;
+            if entry.kind == InodeKind::Dir {
+                kind = FileType::Directory;
+            }
+
+            reply.add(entry.ino, i as i64 + 1, kind, name);
+        }
+
+        reply.ok();
     }
 }
 

@@ -1,16 +1,35 @@
 use std::{
     io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write},
-    time::SystemTime,
+    time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
 use super::{
-    constants::{Disk, BLOCK_SIZE, INODE_BLOCK_BASE},
+    constants::{Disk, InodeKind, BLOCK_SIZE, INODE_BLOCK_BASE},
     type_extensions::TinyTimespec,
 };
 use fuse::{FileAttr, FileType};
 use serde::{Deserialize, Serialize};
+use time::Timespec;
 
 impl Inode {
+    pub fn new() -> Inode {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("error creating time");
+
+        Inode {
+            id: 0,
+            kind: InodeKind::File,
+            block_count: 0,
+            size: 0,
+            accessed_at: now.as_millis() as u64,
+            modified_at: now.as_millis() as u64,
+            created_at: now.as_millis() as u64,
+            hard_links: 0,
+            block_pointers: [0; 12],
+        }
+    }
+
     pub fn save_at(&mut self, ino: u64, disk: &Disk) -> Result<(), bincode::Error> {
         let location = Self::get_location(ino);
         let mut buf = BufWriter::new(disk);
@@ -33,20 +52,18 @@ impl Inode {
 
     pub fn to_file_attr(&mut self) -> FileAttr {
         let mut kind = FileType::RegularFile;
-        if self.kind == 1 {
+        if self.kind == InodeKind::Dir {
             kind = FileType::Directory;
         }
-
-        let now = SystemTime::now();
 
         FileAttr {
             ino: self.id,
             size: self.block_count * BLOCK_SIZE as u64,
             blocks: self.block_count,
-            atime: now.to_timespec(),
-            mtime: now.to_timespec(),
-            crtime: now.to_timespec(),
-            ctime: now.to_timespec(),
+            atime: self.to_time(self.accessed_at),
+            mtime: self.to_time(self.modified_at),
+            crtime: self.to_time(self.created_at),
+            ctime: self.to_time(self.created_at),
             kind,
             perm: 0o755,
             nlink: self.hard_links,
@@ -61,16 +78,22 @@ impl Inode {
         bincode::serialize_into(buf, self)
     }
 
+    fn to_time(&mut self, millis: u64) -> Timespec {
+        let sys_time = UNIX_EPOCH + Duration::from_millis(millis);
+        sys_time.to_timespec()
+    }
+
     fn get_location(ino: u64) -> u64 {
         INODE_BLOCK_BASE + (ino * size_of::<Inode>() as u64)
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 #[repr(C)]
 pub struct Inode {
     pub id: u64,
-    pub kind: u8,
+    pub kind: InodeKind,
+    pub size: usize,
     pub block_count: u64,
     pub accessed_at: u64,
     pub modified_at: u64,
