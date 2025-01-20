@@ -5,6 +5,8 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
+use super::constants::InodeKind;
+
 impl DirData {
     pub fn serialize_into<W: Write>(&mut self, buf: W) -> Result<(), bincode::Error> {
         bincode::serialize_into(buf, self)
@@ -29,5 +31,5 @@ pub struct DirData {
 pub struct DirEntry {
     pub ino: u64,
     pub name: String,
-    pub kind: u8,
+    pub kind: InodeKind,
 }

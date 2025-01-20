@@ -6,7 +6,7 @@ use std::{
 
 use super::{
     bitmap::Bitmap,
-    constants::{Disk, DIR},
+    constants::{Disk, InodeKind},
     directory::DirData,
     inode::Inode,
 };
@@ -34,7 +34,7 @@ impl Filesystem for TinyFS {
         inode.block_pointers = block_ptrs;
         inode.block_count = block_count as u64;
         inode.id = root_inode as u64;
-        inode.kind = DIR;
+        inode.kind = InodeKind::Dir;
         inode
             .save_at(root_inode as u64, &self.disk)
             .expect("error saving root directory inode");
@@ -64,7 +64,7 @@ impl Filesystem for TinyFS {
 
         for (i, (name, entry)) in dir_data.entries.iter().enumerate().skip(offset as usize) {
             let mut kind = FileType::RegularFile;
-            if entry.kind == 1 {
+            if entry.kind == InodeKind::Dir {
                 kind = FileType::Directory;
             }
 

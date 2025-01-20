@@ -4,7 +4,7 @@ use std::{
 };
 
 use super::{
-    constants::{Disk, BLOCK_SIZE, INODE_BLOCK_BASE},
+    constants::{Disk, InodeKind, BLOCK_SIZE, INODE_BLOCK_BASE},
     type_extensions::TinyTimespec,
 };
 use fuse::{FileAttr, FileType};
@@ -19,7 +19,7 @@ impl Inode {
 
         Inode {
             id: 0,
-            kind: 0,
+            kind: InodeKind::File,
             block_count: 0,
             size: 0,
             accessed_at: now.as_millis() as u64,
@@ -52,7 +52,7 @@ impl Inode {
 
     pub fn to_file_attr(&mut self) -> FileAttr {
         let mut kind = FileType::RegularFile;
-        if self.kind == 1 {
+        if self.kind == InodeKind::Dir {
             kind = FileType::Directory;
         }
 
@@ -92,7 +92,7 @@ impl Inode {
 #[repr(C)]
 pub struct Inode {
     pub id: u64,
-    pub kind: u8,
+    pub kind: InodeKind,
     pub size: usize,
     pub block_count: u64,
     pub accessed_at: u64,
