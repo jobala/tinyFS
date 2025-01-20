@@ -1,4 +1,4 @@
-use fuse::Filesystem;
+use fuse::{FileType, Filesystem};
 use std::{
     ffi::c_int,
     io::{BufWriter, Write},
@@ -6,7 +6,7 @@ use std::{
 
 use super::{
     bitmap::Bitmap,
-    constants::{Disk, DIR},
+    constants::{Disk, DIR, FILE},
     directory::DirData,
     inode::Inode,
 };
@@ -57,7 +57,18 @@ impl Filesystem for TinyFS {
         reply.attr(&self.ttl(), &inode.to_file_attr());
     }
 
-    fn readdir(&mut self, _req: &fuse::Request, _ino: u64, _fh: u64, _offset: i64, reply: fuse::ReplyDirectory) {}
+    // TODO: if inode is a file respond with the inode
+    fn readdir(&mut self, _req: &fuse::Request, ino: u64, _fh: u64, offset: i64, mut reply: fuse::ReplyDirectory) {
+        let mut inode = Inode::load_from(&self.disk, ino).expect("error loading inode");
+        if inode.kind == FILE {
+            reply.add(inode.id, offset, FileType::RegularFile, "this file");
+        }
+
+        // load data from blocks
+        // deserialize block data into dirdata
+        // iterate through dirdata entries and add entry to reply
+        reply.ok();
+    }
 }
 
 pub struct TinyFS {

@@ -4,6 +4,7 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
+
 impl DirData {
     pub fn serialize_into<W: Write>(&mut self, buf: W) -> Result<(), bincode::Error> {
         bincode::serialize_into(buf, self)
