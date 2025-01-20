@@ -9,3 +9,4 @@ pub const FILE: u8 = 0;
 pub const DIR: u8 = 1;
 
 pub type Disk = File;
+pub type Block = [u8; BLOCK_SIZE];

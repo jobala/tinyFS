@@ -10,7 +10,7 @@ impl DirData {
         bincode::serialize_into(buf, self)
     }
 
-    pub fn deserialize_from<R: Read>(&mut self, buf: R) -> Result<DirData, bincode::Error> {
+    pub fn deserialize_from<R: Read>(buf: R) -> Result<DirData, bincode::Error> {
         let directory: Self = bincode::deserialize_from(buf)?;
         Ok(directory)
     }
@@ -22,12 +22,12 @@ impl DirData {
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct DirData {
-    entries: HashMap<String, DirEntry>,
+    pub entries: HashMap<String, DirEntry>,
 }
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct DirEntry {
-    ino: u64,
-    name: String,
-    mode: u8,
+    pub ino: u64,
+    pub name: String,
+    pub kind: u8,
 }

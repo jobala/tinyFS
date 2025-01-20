@@ -21,6 +21,7 @@ impl Inode {
             id: 0,
             kind: 0,
             block_count: 0,
+            size: 0,
             accessed_at: now.as_millis() as u64,
             modified_at: now.as_millis() as u64,
             created_at: now.as_millis() as u64,
@@ -92,6 +93,7 @@ impl Inode {
 pub struct Inode {
     pub id: u64,
     pub kind: u8,
+    pub size: usize,
     pub block_count: u64,
     pub accessed_at: u64,
     pub modified_at: u64,
